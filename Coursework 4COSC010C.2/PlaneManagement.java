@@ -146,91 +146,91 @@ class PlaneManagement {
 }
 
 class Person {
-    private static Scanner scanner = new Scanner(System.in);
-    private static String name, surname, email;
+    private Scanner scanner = new Scanner(System.in);
+    private String name, surname, email;
 
     public Person() {
         System.out.print("\nName: ");
-        name = scanner.next();
+        this.name = scanner.next();
         System.out.print("Surname: ");
-        surname = scanner.next();
+        this.surname = scanner.next();
         System.out.print("Email: ");
-        email = scanner.next();
+        this.email = scanner.next();
         System.out.println();
     }
     public Person(String name, String surname, String email) {
-        Person.name = name;
-        Person.surname = surname;
-        Person.email = email;
+        this.name = name;
+        this.surname = surname;
+        this.email = email;
     }
 
-    public static void set_name(String name) {
-        Person.name = name;
+    public void set_name(String name) {
+        this.name = name;
     }
-    public static String get_name() {
+    public String get_name() {
         return name;
     }
-    public static void set_surname(String surname) {
-        Person.surname = surname;
+    public void set_surname(String surname) {
+        this.surname = surname;
     }
-    public static String get_surname() {
+    public String get_surname() {
         return surname;
     }
-    public static void set_email(String email) {
-        Person.email = email;
+    public void set_email(String email) {
+        this.email = email;
     }
-    public static String get_email() {
+    public String get_email() {
         return email;
     }
 
-    public static void print_info() {
+    public void print_info() {
         System.out.println("Name: " + name + " Surname: " + surname + "Email: " + email);
     }
 }
 
 class Ticket {
-    private static char row;
-    private static int seat, price;
-    private static Person person;
+    private char row;
+    private int seat, price;
+    private Person person;
 
     public Ticket(char row, int seat, int price, Person person) {
-        Ticket.row = row;
-        Ticket.seat = seat;
-        Ticket.price = price;
-        Ticket.person = person;
+        this.row = row;
+        this.seat = seat;
+        this.price = price;
+        this.person = person;
     }
 
-    public static void set_row(char row) {
-        Ticket.row = row;
+    public void set_row(char row) {
+        this.row = row;
     }
-    public static char get_row() {
+    public char get_row() {
         return row;
     }
-    public static void set_seat(int seat) {
-        Ticket.seat = seat;
+    public void set_seat(int seat) {
+        this.seat = seat;
     }
-    public static int get_seat() {
+    public int get_seat() {
         return seat;
     }
-    public static void set_price(int price) {
-        Ticket.price = price;
+    public void set_price(int price) {
+        this.price = price;
     }
-    public static int get_price() {
+    public int get_price() {
         return price;
     }
-    public static void set_person(Person person) {
-        Ticket.person = person;
+    public void set_person(Person person) {
+        this.person = person;
     }
-    public static Person get_person() {
+    public Person get_person() {
         return person;
     }
 
-    public static void print_info() {
+    public void print_info() {
         System.out.println("Ticket Details \n" +
-                "Row: " + Ticket.row + "\t Seat: " + seat +
+                "Row: " + row + "\t Seat: " + seat +
                 "\nPrice: £" + price +
-                "\nName: " + Person.get_name() + " " + Person.get_surname() +
-                "\nEmail: " + Person.get_email() + "\n"
+                "\nName: " + person.get_name() + " " + person.get_surname() +
+                "\nEmail: " + person.get_email() + "\n"
         );
     }
 
