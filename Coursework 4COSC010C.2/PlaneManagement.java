@@ -3,7 +3,7 @@ import java.util.Scanner;
 
 class PlaneManagement {
     private static Scanner scanner = new Scanner(System.in);
-    private static final char[] ROWS = {'A', 'B', 'C', 'D'};
+    private static final char[] ROWS = {'a', 'b', 'c', 'd'};
     private static final boolean[][] SEATS = { new boolean[14], new boolean[12], new boolean[12], new boolean[14] };
     private static ArrayList<Ticket> TICKETS = new ArrayList<>();
     private static char userSelectedRowLetter;
@@ -68,7 +68,7 @@ class PlaneManagement {
         if (SEATS[rowNumber][userSelectedSeatNumber-1]) {
             SEATS[rowNumber][userSelectedSeatNumber-1] = false;
 
-            // remove the Ticket object from the TICKETS array:TODO
+            // remove the Ticket object from the TICKETS array
             for(int i=0; i<TICKETS.size(); i++) {
                 Ticket ticket = TICKETS.get(i);
                 if(ticket.get_seat() == userSelectedSeatNumber && ticket.get_row() == userSelectedRowLetter) {
@@ -233,7 +233,6 @@ class Ticket {
                 "\nEmail: " + person.get_email() + "\n"
         );
     }
-
 }
 
 /* e935a372151f4ee092dc6f54a4a6c40a4d254f9e */
