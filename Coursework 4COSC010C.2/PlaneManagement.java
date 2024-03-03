@@ -1,9 +1,11 @@
+import java.io.IOException;
 import java.util.ArrayList;
+import java.io.FileWriter;
 import java.util.Scanner;
 
 class PlaneManagement {
     private static Scanner scanner = new Scanner(System.in);
-    private static final char[] ROWS = {'a', 'b', 'c', 'd'};
+    private static final char[] ROWS = { 'a', 'b', 'c', 'd' };
     private static final boolean[][] SEATS = { new boolean[14], new boolean[12], new boolean[12], new boolean[14] };
     private static ArrayList<Ticket> TICKETS = new ArrayList<>();
     private static char userSelectedRowLetter;
@@ -20,10 +22,11 @@ class PlaneManagement {
                 case 3 -> find_first_available();
                 case 4 -> show_seating_plan();
                 case 5 -> print_tickets_info();
+                case 6 -> search_ticket();
                 case 0 -> terminate = true;
                 default -> System.out.println("Invalid option. Please enter a valid number. \n");
             }
-        } while(!terminate);
+        } while (!terminate);
     }
 
     private static int menu() {
@@ -39,8 +42,7 @@ class PlaneManagement {
                         "\t 6) Search ticket\n" +
                         "\t 0) Quit\n" +
                         "**************************************** \n" +
-                        "Please select an option: "
-        );
+                        "Please select an option: ");
 
         return scanner.nextInt();
     }
@@ -50,11 +52,13 @@ class PlaneManagement {
 
         // check if the seat is available and if so book it
         int rowNumber = (int) userSelectedRowLetter - 97;
-        if (!SEATS[rowNumber][userSelectedSeatNumber-1]) {
-            SEATS[rowNumber][userSelectedSeatNumber-1] = true;
+        if (!SEATS[rowNumber][userSelectedSeatNumber - 1]) {
+            SEATS[rowNumber][userSelectedSeatNumber - 1] = true;
 
             // default constructor of Person() prompts for user input
-            TICKETS.add(new Ticket(ROWS[rowNumber], userSelectedSeatNumber, calculate_seat_pricing(userSelectedSeatNumber), new Person()));
+            TICKETS.add(new Ticket(ROWS[rowNumber], userSelectedSeatNumber,
+                    calculate_seat_pricing(userSelectedSeatNumber), new Person()));
+            save(userSelectedRowLetter, userSelectedSeatNumber); // save info into the file
             System.out.println("seat booked! ✈️ \n");
         } else
             System.out.println("seat not available. ❌ \n");
@@ -65,13 +69,13 @@ class PlaneManagement {
 
         // check if the seat is available and if so book it
         int rowNumber = (int) userSelectedRowLetter - 97;
-        if (SEATS[rowNumber][userSelectedSeatNumber-1]) {
-            SEATS[rowNumber][userSelectedSeatNumber-1] = false;
+        if (SEATS[rowNumber][userSelectedSeatNumber - 1]) {
+            SEATS[rowNumber][userSelectedSeatNumber - 1] = false;
 
             // remove the Ticket object from the TICKETS array
-            for(int i=0; i<TICKETS.size(); i++) {
+            for (int i = 0; i < TICKETS.size(); i++) {
                 Ticket ticket = TICKETS.get(i);
-                if(ticket.get_seat() == userSelectedSeatNumber && ticket.get_row() == userSelectedRowLetter) {
+                if (ticket.get_seat() == userSelectedSeatNumber && ticket.get_row() == userSelectedRowLetter) {
                     TICKETS.remove(i);
                 }
             }
@@ -81,10 +85,10 @@ class PlaneManagement {
     }
 
     private static void find_first_available() {
-        for(int i=0; i<SEATS.length; i++) {
-            for(int j=0; j<SEATS[i].length; j++) {
+        for (int i = 0; i < SEATS.length; i++) {
+            for (int j = 0; j < SEATS[i].length; j++) {
                 if (!SEATS[i][j]) {
-                    System.out.println("Row Letter: " + ROWS[i] + " Seat Number: " + (j+1) + "\n");
+                    System.out.println("Row Letter: " + ROWS[i] + " Seat Number: " + (j + 1) + "\n");
                     return;
                 }
             }
@@ -114,11 +118,51 @@ class PlaneManagement {
         System.out.println("Total Sales: £" + total);
     }
 
+    private static void search_ticket() {
+        input_seat_info();
+
+        Ticket result = search(userSelectedRowLetter, userSelectedSeatNumber);
+        if (result == null)
+            System.out.println("This seat is available. \n");
+        else {
+            System.out.println();
+            result.print_info();
+        }
+    }
+
+    private static Ticket search(char row, int seat) {
+        Ticket result = null;
+        for (Ticket ticket : TICKETS) {
+            if (ticket.get_seat() == seat && ticket.get_row() == row) {
+                result = ticket;
+            }
+        }
+
+        return result; // if null, results have not been found.
+    }
+
+    private static void save(char row, int seat) {
+        try {
+            FileWriter file = new FileWriter("new/filename.txt");
+            Ticket ticket = search(row, seat);
+            file.write(
+                    "row: " + ticket.get_row() + " seat: " + ticket.get_seat() +
+                            "\nprice: " + ticket.get_price() +
+                            "Name: " + ticket.get_person().get_name() + " " + ticket.get_person().get_surname() +
+                            "Email: " + ticket.get_person().get_email());
+            file.close();
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+    }
+
     private static void input_seat_info() {
         while (true) {
             System.out.print("Row Letter: ");
             userSelectedRowLetter = scanner.next().toLowerCase().charAt(0);
-            if (!(userSelectedRowLetter == 'a' || userSelectedRowLetter == 'b' || userSelectedRowLetter == 'c' || userSelectedRowLetter == 'd'))
+            if (!(userSelectedRowLetter == 'a' || userSelectedRowLetter == 'b' || userSelectedRowLetter == 'c'
+                    || userSelectedRowLetter == 'd'))
                 System.out.println("row letter entered is not valid. ⚠️\n");
             else
                 break;
@@ -127,18 +171,21 @@ class PlaneManagement {
         while (true) {
             System.out.print("Seat Number: ");
             userSelectedSeatNumber = scanner.nextInt();
-            if (userSelectedSeatNumber > 0 && userSelectedSeatNumber <= (userSelectedRowLetter == 'a' || userSelectedRowLetter == 'd' ? 14 : 12))
+            if (userSelectedSeatNumber > 0
+                    && userSelectedSeatNumber <= (userSelectedRowLetter == 'a' || userSelectedRowLetter == 'd' ? 14
+                            : 12))
                 break;
             else
                 System.out.println("seat number entered is not valid. ⚠️\n");
         }
     }
+
     private static int calculate_seat_pricing(int seat) {
         if (seat >= 10 && seat <= 14)
             return 180;
-        else if(seat >= 6)
+        else if (seat >= 6)
             return 150;
-        else if(seat > 0)
+        else if (seat > 0)
             return 200;
 
         return -1;
@@ -158,6 +205,7 @@ class Person {
         this.email = scanner.next();
         System.out.println();
     }
+
     public Person(String name, String surname, String email) {
         this.name = name;
         this.surname = surname;
@@ -167,18 +215,23 @@ class Person {
     public void set_name(String name) {
         this.name = name;
     }
+
     public String get_name() {
         return name;
     }
+
     public void set_surname(String surname) {
         this.surname = surname;
     }
+
     public String get_surname() {
         return surname;
     }
+
     public void set_email(String email) {
         this.email = email;
     }
+
     public String get_email() {
         return email;
     }
@@ -203,24 +256,31 @@ class Ticket {
     public void set_row(char row) {
         this.row = row;
     }
+
     public char get_row() {
         return row;
     }
+
     public void set_seat(int seat) {
         this.seat = seat;
     }
+
     public int get_seat() {
         return seat;
     }
+
     public void set_price(int price) {
         this.price = price;
     }
+
     public int get_price() {
         return price;
     }
+
     public void set_person(Person person) {
         this.person = person;
     }
+
     public Person get_person() {
         return person;
     }
@@ -230,8 +290,7 @@ class Ticket {
                 "Row: " + row + "\t Seat: " + seat +
                 "\nPrice: £" + price +
                 "\nName: " + person.get_name() + " " + person.get_surname() +
-                "\nEmail: " + person.get_email() + "\n"
-        );
+                "\nEmail: " + person.get_email() + "\n");
     }
 }
 
