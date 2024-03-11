@@ -6,7 +6,7 @@ import java.io.IOException;
 
 public class PlaneManagement {
     private static Scanner scanner = new Scanner(System.in);
-    private static final char[] ROWS = {'a', 'b', 'c', 'd'};
+    private static final char[] ROWS = {'A', 'B', 'C', 'D'};
     private static final boolean[][] SEATS = { new boolean[14], new boolean[12], new boolean[12], new boolean[14] };
     private static ArrayList<Ticket> TICKETS = new ArrayList<>();
     private static char userSelectedRowLetter;
@@ -53,7 +53,7 @@ public class PlaneManagement {
         input_seat_info();
 
         // check if the seat is available and if so book it
-        int rowNumber = (int) userSelectedRowLetter - 97;
+        int rowNumber = (int) userSelectedRowLetter - 65;
         if (!SEATS[rowNumber][userSelectedSeatNumber-1]) {
             SEATS[rowNumber][userSelectedSeatNumber-1] = true;
 
@@ -69,7 +69,7 @@ public class PlaneManagement {
         input_seat_info();
 
         // check if the seat is available and if so book it
-        int rowNumber = (int) userSelectedRowLetter - 97;
+        int rowNumber = (int) userSelectedRowLetter - 65;
         if (SEATS[rowNumber][userSelectedSeatNumber-1]) {
             SEATS[rowNumber][userSelectedSeatNumber-1] = false;
 
@@ -169,8 +169,8 @@ public class PlaneManagement {
     private static void input_seat_info() {
         while (true) {
             System.out.print("Row Letter: ");
-            userSelectedRowLetter = scanner.next().toLowerCase().charAt(0);
-            if (!(userSelectedRowLetter == 'a' || userSelectedRowLetter == 'b' || userSelectedRowLetter == 'c' || userSelectedRowLetter == 'd'))
+            userSelectedRowLetter = scanner.next().toUpperCase().charAt(0);
+            if (!(userSelectedRowLetter == 'A' || userSelectedRowLetter == 'B' || userSelectedRowLetter == 'C' || userSelectedRowLetter == 'D'))
                 System.out.println("row letter entered is not valid. ⚠️\n");
             else
                 break;
