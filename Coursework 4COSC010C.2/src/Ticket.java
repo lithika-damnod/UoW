@@ -10,6 +10,7 @@ public class Ticket {
         this.person = person;
     }
 
+    // getters and setters
     public void set_row(char row) {
         this.row = row;
     }
@@ -35,6 +36,7 @@ public class Ticket {
         return person;
     }
 
+    // print details of the Ticket
     public void print_info() {
         System.out.println("Ticket Details \n" +
                 "Row: " + row + "\t Seat: " + seat +

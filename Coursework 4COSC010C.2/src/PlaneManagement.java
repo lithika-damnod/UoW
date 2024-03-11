@@ -1,14 +1,50 @@
+import java.util.InputMismatchException;
 import java.util.Scanner;
-import java.util.ArrayList;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
 public class PlaneManagement {
     private static Scanner scanner = new Scanner(System.in);
-    private static final char[] ROWS = {'a', 'b', 'c', 'd'};
+    private static final char[] ROWS = {'A', 'B', 'C', 'D'}; // possible row letters
+
     private static final boolean[][] SEATS = { new boolean[14], new boolean[12], new boolean[12], new boolean[14] };
-    private static ArrayList<Ticket> TICKETS = new ArrayList<>();
+    /*
+        false: 0 (default), true: 1
+        int: 4 bytes, boolean: 1 byte,
+        Using `boolean` instead of `int` can be more memory-efficient.
+     */
+
+    private static Ticket[] TICKETS = {};
+    // for pushing data into the TICKETS array
+    private static void push(Ticket ticket) {
+        int newSize = TICKETS.length + 1;
+        Ticket[] newArr = new Ticket[newSize];
+
+        // copy elements from old array to the new array
+        for(int i=0; i<TICKETS.length; i++) {
+            newArr[i] = TICKETS[i];
+        }
+
+        // push the new value
+        newArr[newSize - 1] = ticket;
+        TICKETS = newArr;
+    }
+    // for removing data from TICKETS array by index
+    private static void remove(int index) {
+        int newSize = TICKETS.length - 1;
+        Ticket[] newArr = new Ticket[newSize];
+
+        // copy elements from old array to the new array
+        for(int i=0; i<TICKETS.length; i++) {
+            if (i != index)
+                newArr[i] = TICKETS[i];
+        }
+
+        TICKETS = newArr;
+    }
+
+
     private static char userSelectedRowLetter;
     private static int userSelectedSeatNumber;
 
@@ -53,12 +89,12 @@ public class PlaneManagement {
         input_seat_info();
 
         // check if the seat is available and if so book it
-        int rowNumber = (int) userSelectedRowLetter - 97;
+        int rowNumber = (int) userSelectedRowLetter - 65; // converts the entered row letter into an integer to match up with the SEATS array
         if (!SEATS[rowNumber][userSelectedSeatNumber-1]) {
             SEATS[rowNumber][userSelectedSeatNumber-1] = true;
 
             // default constructor of Person() prompts for user input
-            TICKETS.add(new Ticket(ROWS[rowNumber], userSelectedSeatNumber, calculate_seat_pricing(userSelectedSeatNumber), new Person()));
+            push(new Ticket(ROWS[rowNumber], userSelectedSeatNumber, calculate_seat_pricing(userSelectedSeatNumber), new Person()));
             save(userSelectedRowLetter, userSelectedSeatNumber); // save info into the file
             System.out.println("seat booked! ✈️ \n");
         } else
@@ -69,15 +105,15 @@ public class PlaneManagement {
         input_seat_info();
 
         // check if the seat is available and if so book it
-        int rowNumber = (int) userSelectedRowLetter - 97;
+        int rowNumber = (int) userSelectedRowLetter - 65; // converts the entered row letter into an integer to match up with the SEATS array
         if (SEATS[rowNumber][userSelectedSeatNumber-1]) {
             SEATS[rowNumber][userSelectedSeatNumber-1] = false;
 
             // remove the Ticket object from the TICKETS array
-            for(int i=0; i<TICKETS.size(); i++) {
-                Ticket ticket = TICKETS.get(i);
+            for(int i=0; i<TICKETS.length; i++) {
+                Ticket ticket = TICKETS[i];
                 if(ticket.get_seat() == userSelectedSeatNumber && ticket.get_row() == userSelectedRowLetter) {
-                    TICKETS.remove(i);
+                    remove(i); // remove the ticket from the TICKETS array
                 }
             }
             System.out.println("seat canceled! 👍️ \n");
@@ -95,6 +131,7 @@ public class PlaneManagement {
             }
         }
 
+        // if the function still runs, it means that all the seats are booked...
         System.out.println("All the seats are reserved. 🔎 \n");
     }
 
@@ -111,7 +148,7 @@ public class PlaneManagement {
     private static void print_tickets_info() {
         int total = 0;
         for (Ticket ticket : TICKETS) {
-            total += ticket.get_price();
+            total += ticket.get_price(); // add the price of the ticket to total
             ticket.print_info();
             System.out.println();
         }
@@ -131,6 +168,7 @@ public class PlaneManagement {
         }
     }
 
+    // searches for a ticket in TICKETS array and returns a Ticket object
     private static Ticket search(char row, int seat) {
         Ticket result = null;
         for(Ticket ticket : TICKETS) {
@@ -142,9 +180,10 @@ public class PlaneManagement {
         return result; // if null, results have not been found.
     }
     private static void save(char row, int seat) {
-        String path = String.valueOf(row).toUpperCase() + seat + ".txt";
+        String path = String.valueOf(row).toUpperCase() + seat + ".txt"; // path name
         File file = new File(path);
         try {
+            // if file doesn't exist, create it
             if (!file.exists()) {
                 file.createNewFile();
             }
@@ -166,23 +205,36 @@ public class PlaneManagement {
         }
     }
 
+    // handles getting input for row letter and the seat number with error handling
     private static void input_seat_info() {
         while (true) {
             System.out.print("Row Letter: ");
-            userSelectedRowLetter = scanner.next().toLowerCase().charAt(0);
-            if (!(userSelectedRowLetter == 'a' || userSelectedRowLetter == 'b' || userSelectedRowLetter == 'c' || userSelectedRowLetter == 'd'))
-                System.out.println("row letter entered is not valid. ⚠️\n");
-            else
-                break;
+            try {
+                userSelectedRowLetter = scanner.next().toUpperCase().charAt(0);
+                if (!(userSelectedRowLetter == 'A' || userSelectedRowLetter == 'B' || userSelectedRowLetter == 'C' || userSelectedRowLetter == 'D'))
+                    System.out.println("invalid input. please enter a single character 'A', 'B', 'C', 'D'.  This runs!\n");
+                else
+                    break;
+            } catch (Exception e) {
+                System.out.println("invalid input. please enter a single character 'A', 'B', 'C', 'D'. \n");
+                scanner.nextLine(); // consume invalid input
+            }
         }
 
         while (true) {
             System.out.print("Seat Number: ");
-            userSelectedSeatNumber = scanner.nextInt();
-            if (userSelectedSeatNumber > 0 && userSelectedSeatNumber <= (userSelectedRowLetter == 'a' || userSelectedRowLetter == 'd' ? 14 : 12))
-                break;
-            else
-                System.out.println("seat number entered is not valid. ⚠️\n");
+            try {
+                userSelectedSeatNumber = scanner.nextInt();
+                if (userSelectedSeatNumber > 0 && userSelectedSeatNumber <= (userSelectedRowLetter == 'A' || userSelectedRowLetter == 'D' ? 14 : 12))
+                    break;
+                else
+                    System.out.println("invalid input. seat number entered is not valid.\n");
+            } catch (InputMismatchException e) {
+                System.out.println("invalid input. only integer values are accepted.\n");
+                scanner.nextLine(); // consume invalid input
+            } catch(Exception e) {
+                System.out.println("invalid input.");
+            }
         }
     }
     private static int calculate_seat_pricing(int seat) {
@@ -196,3 +248,5 @@ public class PlaneManagement {
         return -1;
     }
 }
+
+
