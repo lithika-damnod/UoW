@@ -3,6 +3,7 @@ public class Person {
     private Scanner scanner = new Scanner(System.in);
     private String name, surname, email;
 
+    // default constructor: takes input for all the required members
     public Person() {
         this.name = input("\nName: ");
         this.surname = input("Surname: ");
@@ -15,6 +16,7 @@ public class Person {
         this.email = email;
     }
 
+    // getters and setters
     public void set_name(String name) {
         this.name = name;
     }
@@ -34,10 +36,12 @@ public class Person {
         return email;
     }
 
+    // print details of the Person
     public void print_info() {
         System.out.println("Name: " + name + " Surname: " + surname + "Email: " + email);
     }
 
+    // input for string variables along with error handling
     private String input(String prompt) {
         while (true) {
             try {

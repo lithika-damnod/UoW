@@ -6,10 +6,17 @@ import java.io.IOException;
 
 public class PlaneManagement {
     private static Scanner scanner = new Scanner(System.in);
-    private static final char[] ROWS = {'A', 'B', 'C', 'D'};
+    private static final char[] ROWS = {'A', 'B', 'C', 'D'}; // possible row letters
+
     private static final boolean[][] SEATS = { new boolean[14], new boolean[12], new boolean[12], new boolean[14] };
+    /*
+        false: 0 (default), true: 1
+        int: 4 bytes, boolean: 1 byte,
+        Using `boolean` instead of `int` can be more memory-efficient.
+     */
 
     private static Ticket[] TICKETS = {};
+    // for pushing data into the TICKETS array
     private static void push(Ticket ticket) {
         int newSize = TICKETS.length + 1;
         Ticket[] newArr = new Ticket[newSize];
@@ -23,6 +30,7 @@ public class PlaneManagement {
         newArr[newSize - 1] = ticket;
         TICKETS = newArr;
     }
+    // for removing data from TICKETS array by index
     private static void remove(int index) {
         int newSize = TICKETS.length - 1;
         Ticket[] newArr = new Ticket[newSize];
@@ -81,7 +89,7 @@ public class PlaneManagement {
         input_seat_info();
 
         // check if the seat is available and if so book it
-        int rowNumber = (int) userSelectedRowLetter - 65;
+        int rowNumber = (int) userSelectedRowLetter - 65; // converts the entered row letter into an integer to match up with the SEATS array
         if (!SEATS[rowNumber][userSelectedSeatNumber-1]) {
             SEATS[rowNumber][userSelectedSeatNumber-1] = true;
 
@@ -97,7 +105,7 @@ public class PlaneManagement {
         input_seat_info();
 
         // check if the seat is available and if so book it
-        int rowNumber = (int) userSelectedRowLetter - 65;
+        int rowNumber = (int) userSelectedRowLetter - 65; // converts the entered row letter into an integer to match up with the SEATS array
         if (SEATS[rowNumber][userSelectedSeatNumber-1]) {
             SEATS[rowNumber][userSelectedSeatNumber-1] = false;
 
@@ -105,7 +113,7 @@ public class PlaneManagement {
             for(int i=0; i<TICKETS.length; i++) {
                 Ticket ticket = TICKETS[i];
                 if(ticket.get_seat() == userSelectedSeatNumber && ticket.get_row() == userSelectedRowLetter) {
-                    remove(i);
+                    remove(i); // remove the ticket from the TICKETS array
                 }
             }
             System.out.println("seat canceled! 👍️ \n");
@@ -123,6 +131,7 @@ public class PlaneManagement {
             }
         }
 
+        // if the function still runs, it means that all the seats are booked...
         System.out.println("All the seats are reserved. 🔎 \n");
     }
 
@@ -139,7 +148,7 @@ public class PlaneManagement {
     private static void print_tickets_info() {
         int total = 0;
         for (Ticket ticket : TICKETS) {
-            total += ticket.get_price();
+            total += ticket.get_price(); // add the price of the ticket to total
             ticket.print_info();
             System.out.println();
         }
@@ -159,6 +168,7 @@ public class PlaneManagement {
         }
     }
 
+    // searches for a ticket in TICKETS array and returns a Ticket object
     private static Ticket search(char row, int seat) {
         Ticket result = null;
         for(Ticket ticket : TICKETS) {
@@ -170,9 +180,10 @@ public class PlaneManagement {
         return result; // if null, results have not been found.
     }
     private static void save(char row, int seat) {
-        String path = String.valueOf(row).toUpperCase() + seat + ".txt";
+        String path = String.valueOf(row).toUpperCase() + seat + ".txt"; // path name
         File file = new File(path);
         try {
+            // if file doesn't exist, create it
             if (!file.exists()) {
                 file.createNewFile();
             }
@@ -194,6 +205,7 @@ public class PlaneManagement {
         }
     }
 
+    // handles getting input for row letter and the seat number with error handling
     private static void input_seat_info() {
         while (true) {
             System.out.print("Row Letter: ");
