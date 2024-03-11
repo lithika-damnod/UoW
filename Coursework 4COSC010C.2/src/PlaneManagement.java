@@ -1,6 +1,5 @@
 import java.util.InputMismatchException;
 import java.util.Scanner;
-import java.util.ArrayList;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -9,7 +8,35 @@ public class PlaneManagement {
     private static Scanner scanner = new Scanner(System.in);
     private static final char[] ROWS = {'A', 'B', 'C', 'D'};
     private static final boolean[][] SEATS = { new boolean[14], new boolean[12], new boolean[12], new boolean[14] };
-    private static ArrayList<Ticket> TICKETS = new ArrayList<>();
+
+    private static Ticket[] TICKETS = {};
+    private static void push(Ticket ticket) {
+        int newSize = TICKETS.length + 1;
+        Ticket[] newArr = new Ticket[newSize];
+
+        // copy elements from old array to the new array
+        for(int i=0; i<TICKETS.length; i++) {
+            newArr[i] = TICKETS[i];
+        }
+
+        // push the new value
+        newArr[newSize - 1] = ticket;
+        TICKETS = newArr;
+    }
+    private static void remove(int index) {
+        int newSize = TICKETS.length - 1;
+        Ticket[] newArr = new Ticket[newSize];
+
+        // copy elements from old array to the new array
+        for(int i=0; i<TICKETS.length; i++) {
+            if (i != index)
+                newArr[i] = TICKETS[i];
+        }
+
+        TICKETS = newArr;
+    }
+
+
     private static char userSelectedRowLetter;
     private static int userSelectedSeatNumber;
 
@@ -59,7 +86,7 @@ public class PlaneManagement {
             SEATS[rowNumber][userSelectedSeatNumber-1] = true;
 
             // default constructor of Person() prompts for user input
-            TICKETS.add(new Ticket(ROWS[rowNumber], userSelectedSeatNumber, calculate_seat_pricing(userSelectedSeatNumber), new Person()));
+            push(new Ticket(ROWS[rowNumber], userSelectedSeatNumber, calculate_seat_pricing(userSelectedSeatNumber), new Person()));
             save(userSelectedRowLetter, userSelectedSeatNumber); // save info into the file
             System.out.println("seat booked! ✈️ \n");
         } else
@@ -75,10 +102,10 @@ public class PlaneManagement {
             SEATS[rowNumber][userSelectedSeatNumber-1] = false;
 
             // remove the Ticket object from the TICKETS array
-            for(int i=0; i<TICKETS.size(); i++) {
-                Ticket ticket = TICKETS.get(i);
+            for(int i=0; i<TICKETS.length; i++) {
+                Ticket ticket = TICKETS[i];
                 if(ticket.get_seat() == userSelectedSeatNumber && ticket.get_row() == userSelectedRowLetter) {
-                    TICKETS.remove(i);
+                    remove(i);
                 }
             }
             System.out.println("seat canceled! 👍️ \n");
@@ -209,3 +236,5 @@ public class PlaneManagement {
         return -1;
     }
 }
+
+
