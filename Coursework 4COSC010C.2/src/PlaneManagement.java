@@ -1,3 +1,4 @@
+import java.util.InputMismatchException;
 import java.util.Scanner;
 import java.util.ArrayList;
 import java.io.File;
@@ -169,20 +170,32 @@ public class PlaneManagement {
     private static void input_seat_info() {
         while (true) {
             System.out.print("Row Letter: ");
-            userSelectedRowLetter = scanner.next().toUpperCase().charAt(0);
-            if (!(userSelectedRowLetter == 'A' || userSelectedRowLetter == 'B' || userSelectedRowLetter == 'C' || userSelectedRowLetter == 'D'))
-                System.out.println("row letter entered is not valid. ⚠️\n");
-            else
-                break;
+            try {
+                userSelectedRowLetter = scanner.next().toUpperCase().charAt(0);
+                if (!(userSelectedRowLetter == 'A' || userSelectedRowLetter == 'B' || userSelectedRowLetter == 'C' || userSelectedRowLetter == 'D'))
+                    System.out.println("invalid input. please enter a single character 'A', 'B', 'C', 'D'.  This runs!\n");
+                else
+                    break;
+            } catch (Exception e) {
+                System.out.println("invalid input. please enter a single character 'A', 'B', 'C', 'D'. \n");
+                scanner.nextLine(); // consume invalid input
+            }
         }
 
         while (true) {
             System.out.print("Seat Number: ");
-            userSelectedSeatNumber = scanner.nextInt();
-            if (userSelectedSeatNumber > 0 && userSelectedSeatNumber <= (userSelectedRowLetter == 'a' || userSelectedRowLetter == 'd' ? 14 : 12))
-                break;
-            else
-                System.out.println("seat number entered is not valid. ⚠️\n");
+            try {
+                userSelectedSeatNumber = scanner.nextInt();
+                if (userSelectedSeatNumber > 0 && userSelectedSeatNumber <= (userSelectedRowLetter == 'A' || userSelectedRowLetter == 'D' ? 14 : 12))
+                    break;
+                else
+                    System.out.println("invalid input. seat number entered is not valid.\n");
+            } catch (InputMismatchException e) {
+                System.out.println("invalid input. only integer values are accepted.\n");
+                scanner.nextLine(); // consume invalid input
+            } catch(Exception e) {
+                System.out.println("invalid input.");
+            }
         }
     }
     private static int calculate_seat_pricing(int seat) {

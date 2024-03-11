@@ -4,12 +4,9 @@ public class Person {
     private String name, surname, email;
 
     public Person() {
-        System.out.print("\nName: ");
-        this.name = scanner.next();
-        System.out.print("Surname: ");
-        this.surname = scanner.next();
-        System.out.print("Email: ");
-        this.email = scanner.next();
+        this.name = input("\nName: ");
+        this.surname = input("Surname: ");
+        this.email = input("Email: ");
         System.out.println();
     }
     public Person(String name, String surname, String email) {
@@ -39,5 +36,18 @@ public class Person {
 
     public void print_info() {
         System.out.println("Name: " + name + " Surname: " + surname + "Email: " + email);
+    }
+
+    private String input(String prompt) {
+        while (true) {
+            try {
+                System.out.print(prompt);
+                String inp = scanner.next();
+                return inp;
+            } catch(Exception e) { // this case is rare because strings can also contain numbers, just in case something unexpected happens.
+                System.out.println("invalid input. try again \n");
+                scanner.nextLine(); // consume invalid input
+            }
+        }
     }
 }
